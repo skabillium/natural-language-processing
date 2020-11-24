@@ -1,0 +1,7 @@
+{
+	"tabwith": 4,
+	"singleQuote": true,
+	"trailingComma": "es5",
+	"useTabs": true,
+	"endOfLine": "auto"
+}

@@ -1,0 +1,32 @@
+{
+  "name": "natural-lanuage-processing",
+  "version": "1.0.0",
+  "description": "NLP school project for indexing and categorizing websites, made with NodeJS.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node .",
+    "test:articles": "node src/article/article.functions.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skabillium/natural-language-processing.git"
+  },
+  "keywords": [],
+  "author": "skabi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/skabillium/natural-language-processing/issues"
+  },
+  "homepage": "https://github.com/skabillium/natural-language-processing#readme",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "cheerio": "^1.0.0-rc.3",
+    "lodash": "^4.17.20",
+    "natural": "^2.1.5"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/cheerio": "^0.22.22",
+    "@types/natural": "^2.1.1"
+  }
+}
