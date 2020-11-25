@@ -4,11 +4,14 @@
 module.exports = {
 	urls: {
 		nyt: 'https://nytimes.com',
-		twp: 'https://www.washingtonpost.com/',
-		cnn: 'https://edition.cnn.com/',
-		database: process.env.DATABASE_URL,
+		database: 'mongodb://localhost:27017/nlp',
 	},
 	regex: {
 		html: /^.*.html$/i,
+	},
+	pos_tagger: {
+		language: 'EN',
+		default_category: 'N',
+		default_category_capitalized: 'NNP',
 	},
 };

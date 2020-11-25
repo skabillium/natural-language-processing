@@ -4,8 +4,7 @@
   "description": "NLP school project for indexing and categorizing websites, made with NodeJS.",
   "main": "src/app.js",
   "scripts": {
-    "start": "node .",
-    "test:articles": "node src/article/article.functions.js"
+    "start": "node ."
   },
   "repository": {
     "type": "git",
@@ -22,6 +21,7 @@
     "axios": "^0.21.0",
     "cheerio": "^1.0.0-rc.3",
     "lodash": "^4.17.20",
+    "mongoose": "^5.10.16",
     "natural": "^2.1.5"
   },
   "devDependencies": {

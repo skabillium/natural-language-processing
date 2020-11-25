@@ -1,8 +1,10 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { isEmpty } = require('lodash');
+const natural = require('natural');
 
 const config = require('../config');
+// const Article = require('./article.model');
 
 /**
  * Get New York Times home page and extract the article urls
@@ -23,8 +25,13 @@ async function get_nyt_urls() {
 				const link = links[index];
 				const anchor = $(link).find('a').attr('href');
 
-				if (!isEmpty(anchor) && config.regex.html.test(anchor))
-					urls.push(config.urls.nyt + anchor);
+				if (!isEmpty(anchor) && config.regex.html.test(anchor)) {
+					if (anchor.includes('http')) {
+						urls.push(anchor);
+					} else {
+						urls.push(config.urls.nyt + anchor);
+					}
+				}
 			}
 
 			return urls;
@@ -63,50 +70,53 @@ async function parse_nyt_article(url) {
 }
 
 /**
- * Get Washington Post home page and extract the article urls
+ * Tag article body
+ * @param {Object} body The article body
  */
-async function get_twp_urls() {
+function tag_article(body) {
+	// Initialize tagger
+	const lexicon = new natural.Lexicon(
+		config.pos_tagger.language,
+		config.pos_tagger.default_category,
+		config.pos_tagger.default_category_capitalized
+	);
+	const ruleSet = new natural.RuleSet(config.pos_tagger.language);
+	const tagger = new natural.BrillPOSTagger(lexicon, ruleSet);
+
+	// Initialize tokenizer
+	const tokenizer = new natural.WordTokenizer();
+
+	const tokenized_body = tokenizer.tokenize(body);
+	const result = tagger.tag(tokenized_body);
+	return result.taggedWords;
+}
+
+/**
+ * Scrape and parse all New York Times home page articles.
+ */
+async function get_articles() {
 	try {
-		const response = await axios.get(config.urls.twp);
+		let articles = [];
+		const urls = await get_nyt_urls();
+		for (let index = 0; index < urls.length; index++) {
+			const url = urls[index];
+			if (index === 1) break;
 
-		// If no response errors occurred continue
-		if (response.status === 200) {
-			const $ = cheerio.load(response.data);
-			const links = $('div');
+			let article = await parse_nyt_article(url);
+			article.tags = tag_article(article.body);
 
-			let urls = [];
-
-			for (let index = 0; index < links.length; index++) {
-				const link = links[index];
-				console.log(link);
-			}
-
-			return urls;
-		} else {
-			throw new Error('Something went wrong when fetching article');
+			articles.push(article);
 		}
+
+		return articles;
 	} catch (error) {
 		throw error;
 	}
 }
 
-get_twp_urls()
-	.then()
-	.catch((e) => console.log(e));
-
-/**
- * Get a Washington Post news article and extract headline, summary and body
- * @param {String} url The article url
- */
-async function parse_twp_article(url) {}
-
-/**
- * Get CNN home page and extract the article urls
- */
-async function get_cnn_articles() {}
-
-/**
- * Get a CNN article and extract headline, summary and body
- * @param {String} url The article url
- */
-async function parse_cnn_article(url) {}
+module.exports = {
+	get_nyt_urls,
+	parse_nyt_article,
+	tag_article,
+	get_articles,
+};
