@@ -4,7 +4,7 @@
 module.exports = {
 	urls: {
 		nyt: 'https://nytimes.com',
-		wsj: 'https://wsj.com',
+		twp: 'https://www.washingtonpost.com/',
 		cnn: 'https://edition.cnn.com/',
 		database: process.env.DATABASE_URL,
 	},
