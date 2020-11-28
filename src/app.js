@@ -17,7 +17,7 @@ mongoose.connect(
 );
 mongoose.Promise = global.Promise;
 
-articleService
-	.get_articles()
-	.then((a) => fs.writeFileSync('article.json', JSON.stringify(a)))
-	.catch((e) => console.log(e));
+// articleService
+// 	.get_articles()
+// 	.then((a) => fs.writeFileSync('article.json', JSON.stringify(a)))
+// 	.catch((e) => console.log(e));

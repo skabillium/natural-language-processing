@@ -4,10 +4,8 @@
 module.exports = {
 	urls: {
 		nyt: 'https://nytimes.com',
+		cbs: 'https://www.cbsnews.com/world/',
 		database: 'mongodb://localhost:27017/nlp',
-	},
-	regex: {
-		html: /^.*.html$/i,
 	},
 	pos_tagger: {
 		language: 'EN',
