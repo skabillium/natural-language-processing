@@ -5,7 +5,8 @@
 	"main": "src/app.js",
 	"scripts": {
 		"start": "node .",
-		"test": "node src/article/article.functions.js"
+		"test:article": "node src/article/article.functions.js",
+		"test:nlp": "node src/nlp/nlp.functions.js"
 	},
 	"repository": {
 		"type": "git",
@@ -24,6 +25,7 @@
 		"lodash": "^4.17.20",
 		"mongoose": "^5.10.16",
 		"natural": "^2.1.5",
+		"wink-lemmatizer": "^3.0.2",
 		"wordnet-db": "^3.1.14"
 	},
 	"devDependencies": {
