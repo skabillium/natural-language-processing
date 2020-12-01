@@ -172,7 +172,6 @@ async function fetch_articles() {
 			articles.push({
 				id: saved._id,
 				url: saved.url,
-				headline: saved.headline,
 			});
 		}
 

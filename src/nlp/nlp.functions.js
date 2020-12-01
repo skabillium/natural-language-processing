@@ -23,16 +23,11 @@ function tag_text(body) {
 	const tokenized_body = tokenizer.tokenize(body);
 	const { taggedWords } = tagger.tag(tokenized_body);
 
-	for (let i = 0; i < taggedWords.length; i++) {
-		let word = taggedWords[i];
-
-		// If closed class category don't extract lemma
-		if (pos_tagger.closed_class_categories.includes(word.tag)) continue;
-
-		word.lemma = get_tagged_word_lemma(word.token, word.tag);
-	}
-
-	return taggedWords;
+	return taggedWords
+		.filter((word) => !pos_tagger.closed_class_categories.includes(word.tag))
+		.map((word) => {
+			return { ...word, lemma: get_tagged_word_lemma(word.token, word.tag) };
+		});
 }
 
 /**
