@@ -1,41 +1,103 @@
 const { Article } = require('../article');
 const Lemma = require('./lemma.model');
+const { nlpService } = require('../nlp');
 
-const { isEmpty } = require('lodash');
 const mongoose = require('mongoose');
 
 /**
  * Extract all the distinct lemmas from the articles in the database and
  * save them to their own database collection
  */
-async function fetch_lemmas() {
-	const articles = await Article.find({}, { _id: 1, pos_tags: 1 }).lean();
+async function fetch_distinct_lemmas() {
+	try {
+		const articles = await Article.find({}, { _id: 1, pos_tags: 1 })
+			.limit(3)
+			.lean();
 
-	for (let i = 0; i < articles.length; i++) {
-		const article = articles[i];
+		for (let i = 0; i < articles.length; i++) {
+			const article = articles[i];
 
-		// Get just the lemmas from the tagged text
-		const lemmas = article.pos_tags.filter((entry) => {
-			if (!isEmpty(entry.lemma)) return entry.lemma;
-		});
+			console.log('TOTAL TOKENS', article.pos_tags.length);
 
-		/**
-		 * Get the appearances for each unique lemma in the text and save
-		 * it in the database
-		 */
-		for (let j = 0; j < lemmas.length; j++) {
-			const lemma = lemmas[j];
-			const appearances = lemmas.reduce((count, l) => {
-				if (l === lemma) count++;
+			// Get just the lemmas from the tagged text
+			const lemmas = article.pos_tags.map((entry) => {
+				return entry.lemma;
 			});
 
-			// Check if lemma in already in the database
+			/**
+			 * Get the appearances for each unique lemma in the text and save
+			 * it in the database
+			 */
+			for (let j = 0; j < lemmas.length; j++) {
+				const lemma_name = lemmas[j];
+				const appearances = lemmas.filter((entry) => entry === lemma_name)
+					.length;
 
-			const obj = {
-				_id: mongoose.Types.ObjectId(),
-			};
+				// Check if lemma in already in the database
+				let saved_lemma = await Lemma.findOne({ name: lemma_name });
+				let lemma = {};
+
+				if (saved_lemma) {
+					// Update articles field only
+					saved_lemma.set(`articles.${article._id}.appearances`, appearances);
+					lemma = await saved_lemma.save();
+				} else {
+					// Create new database entry
+					let articles_field = {};
+					articles_field[article._id] = { appearances };
+
+					lemma = new Lemma({
+						_id: mongoose.Types.ObjectId(),
+						name: lemma_name,
+						articles: articles_field,
+					});
+
+					await lemma.save();
+				}
+			}
 		}
+
+		return Lemma.find().lean();
+	} catch (error) {
+		throw error;
 	}
 }
 
-module.exports = { fetch_lemmas };
+/**
+ * Calculate total number of appearances and tf-idf metric for each distinct
+ * lemma in the database
+ */
+async function create_inverted_index() {
+	try {
+		// Get all the articles and lemmas from the database
+		const lemmas = await Lemma.find({}, { name: 1, articles: 1 });
+		const articles = await Article.find({}, { _id: 1, pos_tags: 1 });
+		// Initialize the tf-idf calculator
+		const tfidf = nlpService.tfidf;
+
+		// Load all the articles to the tf-idf calculator
+		for (let i = 0; i < articles.length; i++) {
+			const article = articles[i];
+			const article_lemmas = article.pos_tags.map((word) => {
+				return word.lemma;
+			});
+			tfidf.addDocument(article_lemmas);
+		}
+
+		// Calculate weight (tf-idf metric) for every lemma in the database
+		for (let i = 0; i < lemmas.length; i++) {
+			const lemma = lemmas[i];
+
+			tfidf.tfidfs(lemma.name, function (index, measure) {
+				if (measure > 0)
+					lemma.set(`articles.${articles[index]._id}.weight`, measure);
+			});
+
+			await lemma.save();
+		}
+	} catch (error) {
+		throw error;
+	}
+}
+
+module.exports = { fetch_distinct_lemmas, create_inverted_index };

@@ -48,4 +48,8 @@ function get_tagged_word_lemma(word, tag) {
 	else return lemmatize.noun(word);
 }
 
-module.exports = { tag_text, get_tagged_word_lemma };
+module.exports = {
+	tag_text,
+	get_tagged_word_lemma,
+	tfidf: new natural.TfIdf(),
+};

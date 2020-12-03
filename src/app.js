@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('./config');
 const { articleService, Article } = require('./article');
+const { lemmaService } = require('./lemma');
 
 const fs = require('fs');
 
@@ -21,20 +22,49 @@ mongoose.Promise = global.Promise;
 // articleService
 // 	.fetch_articles()
 // 	.then((articles) => {
-// 		console.log('ID', 'URL', 'HEADLINE');
-// 		articles.forEach((a) => console.log(a.id, a.url, a.headline));
+// 		console.table(articles);
 // 		process.exit(0);
 // 	})
-// 	.catch((e) => console.log(e));
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(1);
+// 	});
+
+// Create inverted index
+// lemmaService
+// 	.create_inverted_index()
+// 	.then((d) => {
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(1);
+// 	});
+
+// Fetch lemmas for database
+// lemmaService
+// 	.fetch_distinct_lemmas()
+// 	.then((r) => {
+// 		console.log('UNIQUE LEMMAS', r.length);
+// 		fs.writeFileSync('lemmas.json', JSON.stringify(r));
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(1);
+// 	});
 
 // Get some articles
-Article.findOne({})
-	.lean()
-	.then((a) => {
-		fs.writeFileSync('some-articles.json', JSON.stringify(a));
-		process.exit(0);
-	})
-	.catch((e) => console.log(e));
+// Article.findOne({ _id: '5fc504ee66673f247ac8fb9f' })
+// 	.lean()
+// 	.then((a) => {
+// 		fs.writeFileSync('some-articles.json', JSON.stringify(a));
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(1);
+// 	});
 
 // Delete all articles
 // Article.deleteMany({})
@@ -42,4 +72,7 @@ Article.findOne({})
 // 		console.log(d);
 // 		process.exit(0);
 // 	})
-// 	.catch((e) => console.log(e));
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(1);
+// 	});
