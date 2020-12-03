@@ -1,7 +1,14 @@
+const path = require('path');
+
 /**
  * Config object for all project constants
  */
 module.exports = {
+	files: {
+		root_dir: path.join(__dirname, '..'),
+		default_xml_name: 'inverted-index.xml',
+		default_json_name: 'inverted-index.json',
+	},
 	urls: {
 		nyt: 'https://nytimes.com',
 		cbs: 'https://www.cbsnews.com/world/',

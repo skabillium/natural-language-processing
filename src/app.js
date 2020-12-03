@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const config = require('./config');
 const { articleService, Article } = require('./article');
 const { lemmaService } = require('./lemma');
+const { fileService } = require('./file');
 
 const fs = require('fs');
 
@@ -52,6 +53,30 @@ mongoose.Promise = global.Promise;
 // 	.catch((e) => {
 // 		console.log(e);
 // 		process.exit(1);
+// 	});
+
+// Export file
+// fileService
+// 	.export_file('test.json')
+// 	.then(() => {
+// 		console.log('done');
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(0);
+// 	});
+
+// Parse file
+// fileService
+// 	.parse_file('yolo.json')
+// 	.then((lemmas) => {
+// 		console.table(lemmas);
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(0);
 // 	});
 
 // Get some articles
