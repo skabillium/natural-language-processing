@@ -56,12 +56,20 @@ async function parse_json_file(filename = config.files.default_json_name) {
 		let result = [];
 
 		for (let i = 0; i < file.length; i++) {
-			const l = file[i];
+			const file_entry = file[i];
 
-			const lemma = {
+			let lemma = {
 				_id: mongoose.Types.ObjectId(),
-				...l,
+				name: file_entry.name,
+				articles: {},
 			};
+
+			file_entry.documents.forEach(
+				(doc) => (lemma.articles[doc.id] = { weight: doc.weight })
+			);
+
+			lemma = await new Lemma(lemma);
+			await lemma.save();
 
 			result.push({ id: lemma._id, name: lemma.name });
 		}
@@ -112,7 +120,7 @@ async function export_xml_file(filename = config.files.default_xml_name) {
  */
 async function export_json_file(filename = config.files.default_json_name) {
 	try {
-		const lemmas = await Lemma.find({}, { name: 1, documents: 1 }).lean();
+		const lemmas = await Lemma.find({}, { name: 1, articles: 1 }).lean();
 
 		return fs.outputFile(
 			path.join(config.files.root_dir, filename),

@@ -35,6 +35,7 @@ mongoose.Promise = global.Promise;
 // lemmaService
 // 	.create_inverted_index()
 // 	.then((d) => {
+// 		fs.writeFileSync('yolo.json', JSON.stringify(d));
 // 		process.exit(0);
 // 	})
 // 	.catch((e) => {
@@ -68,16 +69,16 @@ mongoose.Promise = global.Promise;
 // 	});
 
 // Parse file
-// fileService
-// 	.parse_file('yolo.json')
-// 	.then((lemmas) => {
-// 		console.table(lemmas);
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(0);
-// 	});
+fileService
+	.parse_file('sample.json')
+	.then((lemmas) => {
+		console.table(lemmas);
+		process.exit(0);
+	})
+	.catch((e) => {
+		console.log(e);
+		process.exit(0);
+	});
 
 // Get some articles
 // Article.findOne({ _id: '5fc504ee66673f247ac8fb9f' })
