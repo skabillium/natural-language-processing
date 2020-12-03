@@ -1,6 +1,6 @@
 node_modules
 !package*.json
-!sample.json
-!sample.xml
 *.json
 *.xml
+!sample.json
+!sample.xml

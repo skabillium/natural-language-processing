@@ -5,7 +5,7 @@ const lemmaSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: String,
 	appearances: Number,
-	documents: [],
+	articles: {},
 });
 
 module.exports = mongoose.model('Lemma', lemmaSchema);
