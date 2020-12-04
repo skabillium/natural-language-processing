@@ -57,16 +57,29 @@ mongoose.Promise = global.Promise;
 // 	});
 
 // Query lemmas
-lemmaService
-	.query_lemmas()
-	.then((r) => {
-		fs.writeFileSync('yolo.json', JSON.stringify(r));
-		process.exit(0);
-	})
-	.catch((e) => {
-		console.log(e);
-		process.exit(0);
-	});
+// lemmaService
+// 	.query_lemmas()
+// 	.then((r) => {
+// 		fs.writeFileSync('yolo3.json', JSON.stringify(r));
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(0);
+// 	});
+
+// Test response time
+// const queries = [['or', 'ap'], ['yolo']];
+// lemmaService
+// 	.test_response_time(queries)
+// 	.then((r) => {
+// 		console.log('Average reponse time:', r, 'ms');
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(0);
+// 	});
 
 // Export file
 // fileService

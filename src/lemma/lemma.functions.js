@@ -10,9 +10,7 @@ const mongoose = require('mongoose');
  */
 async function fetch_distinct_lemmas() {
 	try {
-		const articles = await Article.find({}, { _id: 1, pos_tags: 1 })
-			.limit(3)
-			.lean();
+		const articles = await Article.find({}, { _id: 1, pos_tags: 1 }).lean();
 
 		for (let i = 0; i < articles.length; i++) {
 			const article = articles[i];
@@ -109,18 +107,20 @@ async function query_lemmas(...lemmas) {
 		// Prepare database queries
 		let query = {
 			$or: lemmas.map((lemma) => {
-				return { name: lemma };
+				return { name: new RegExp(lemma) };
 			}),
 		};
 
-		query = {};
 		// Get lemmas
 		const search_results = await Lemma.find(query, {
 			name: 1,
 			articles: 1,
 		}).lean();
 
-		// Sort results by weight descending
+		/**
+		 * Sort results by weight descending and format database object
+		 * to look like the sample.json file
+		 */
 		const result = search_results.map((r) => {
 			return {
 				name: r.name,
@@ -140,4 +140,34 @@ async function query_lemmas(...lemmas) {
 	}
 }
 
-module.exports = { fetch_distinct_lemmas, create_inverted_index, query_lemmas };
+/**
+ * Get the average response time for a given number of queries
+ * @param {Array} queries Array of queries to be submitted
+ */
+async function test_response_time(queries) {
+	try {
+		let response_times = [];
+		for (let i = 0; i < queries.length; i++) {
+			const query = queries[i];
+
+			const start = new Date();
+			await query_lemmas(...query);
+			const diff = new Date() - start;
+			response_times.push(diff);
+		}
+
+		return (
+			response_times.reduce((total, time) => total + time) /
+			response_times.length
+		);
+	} catch (error) {
+		throw error;
+	}
+}
+
+module.exports = {
+	fetch_distinct_lemmas,
+	create_inverted_index,
+	query_lemmas,
+	test_response_time,
+};
