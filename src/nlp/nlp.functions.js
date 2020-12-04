@@ -20,6 +20,7 @@ const tokenizer = new natural.WordTokenizer();
  * @param {Object} body The article body
  */
 function tag_text(body) {
+	// TODO: Sanitize tokens (No numbers or special characters)
 	const tokenized_body = tokenizer.tokenize(body);
 	const { taggedWords } = tagger.tag(tokenized_body);
 

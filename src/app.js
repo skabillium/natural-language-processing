@@ -1,129 +1,91 @@
 const mongoose = require('mongoose');
+const path = require('path');
 const config = require('./config');
 const { articleService, Article } = require('./article');
 const { lemmaService } = require('./lemma');
 const { fileService } = require('./file');
 
-const fs = require('fs');
+async function main() {
+	try {
+		// Connect to database
+		mongoose.connect(
+			config.urls.database,
+			{
+				useNewUrlParser: true,
+				useUnifiedTopology: true,
+			},
+			(err) => {
+				if (err) console.log(err);
+			}
+		);
+		mongoose.Promise = global.Promise;
 
-// Connect to database
-mongoose.connect(
-	config.urls.database,
-	{
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	},
-	(err) => {
-		if (err) console.log(err);
+		// Parse arguments
+		const arguments = process.argv.slice(2);
+		if (!arguments[0]) {
+			throw new Error(
+				'Command not specified. Please provide one of the following commands: fetch, find, import and export'
+			);
+		}
+
+		// Get command
+		switch (arguments[0]) {
+			case 'fetch':
+				if (!arguments[1]) {
+					throw new Error(
+						'Invalid params, use fetch articles | lemmas | index'
+					);
+				} else if (arguments[1] === 'articles') {
+					// fetch articles for database
+					return articleService.fetch_articles();
+				} else if (arguments[1] === 'lemmas') {
+					// fetch lemmas for database
+					return lemmaService.fetch_distinct_lemmas();
+				} else if (arguments[1] === 'index') {
+					// create inverted index from database lemmas
+					return lemmaService.create_inverted_index();
+				} else {
+					throw new Error(`Invalid param ${arguments[1]}`);
+				}
+
+			case 'find':
+				if (!arguments[1]) {
+					throw new Error('Please provide space separated search terms');
+				} else {
+					// Search
+					arguments.shift();
+					return lemmaService.query_lemmas(...arguments);
+				}
+
+			case 'export':
+				// Export file
+				return fileService.export_file(arguments[1]);
+
+			case 'import':
+				// Import file
+				return fileService.parse_file(arguments[1]);
+
+			case 'test':
+				// Test with query file
+				if (!arguments[1]) {
+					throw new Error('Query file is required');
+				} else {
+					return lemmaService.test_response_time(
+						require(path.join(config.files.root_dir, arguments[1]))
+					);
+				}
+
+			default:
+				throw new Error('Invalid command name');
+		}
+	} catch (error) {
+		throw error;
 	}
-);
-mongoose.Promise = global.Promise;
+}
 
-// Fetch articles for database
-// articleService
-// 	.fetch_articles()
-// 	.then((articles) => {
-// 		console.table(articles);
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(1);
-// 	});
-
-// Create inverted index
-// lemmaService
-// 	.create_inverted_index()
-// 	.then((d) => {
-// 		fs.writeFileSync('yolo.json', JSON.stringify(d));
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(1);
-// 	});
-
-// Fetch lemmas for database
-// lemmaService
-// 	.fetch_distinct_lemmas()
-// 	.then((r) => {
-// 		console.log('UNIQUE LEMMAS', r.length);
-// 		fs.writeFileSync('lemmas.json', JSON.stringify(r));
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(1);
-// 	});
-
-// Query lemmas
-// lemmaService
-// 	.query_lemmas()
-// 	.then((r) => {
-// 		fs.writeFileSync('yolo3.json', JSON.stringify(r));
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(0);
-// 	});
-
-// Test response time
-// const queries = [['or', 'ap'], ['yolo']];
-// lemmaService
-// 	.test_response_time(queries)
-// 	.then((r) => {
-// 		console.log('Average reponse time:', r, 'ms');
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(0);
-// 	});
-
-// Export file
-// fileService
-// 	.export_file('test.json')
-// 	.then(() => {
-// 		console.log('done');
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(0);
-// 	});
-
-// Parse file
-// fileService
-// 	.parse_file('sample.json')
-// 	.then((lemmas) => {
-// 		console.table(lemmas);
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(0);
-// 	});
-
-// Get some articles
-// Article.findOne({ _id: '5fc504ee66673f247ac8fb9f' })
-// 	.lean()
-// 	.then((a) => {
-// 		fs.writeFileSync('some-articles.json', JSON.stringify(a));
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(1);
-// 	});
-
-// Delete all articles
-// Article.deleteMany({})
-// 	.then((d) => {
-// 		console.log(d);
-// 		process.exit(0);
-// 	})
-// 	.catch((e) => {
-// 		console.log(e);
-// 		process.exit(1);
-// 	});
+main()
+	.then(() => process.exit(0))
+	.catch((error) => {
+		console.log(error.message);
+		process.exit(0);
+	});

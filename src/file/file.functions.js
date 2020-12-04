@@ -146,7 +146,9 @@ async function export_json_file(filename = config.files.default_json_name) {
 async function parse_file(filename = config.files.default_xml_name) {
 	try {
 		// Delete previous lemmas
-		await Lemma.deleteMany({});
+		const deleted = await Lemma.deleteMany({});
+
+		console.log(`Deleting previous ${deleted.deletedCount} lemmas`);
 
 		const split = filename.split('.');
 
@@ -154,10 +156,10 @@ async function parse_file(filename = config.files.default_xml_name) {
 
 		switch (split[1]) {
 			case 'xml':
-				// code block
+				console.log('Importing', filename);
 				return parse_xml_file(filename);
 			case 'json':
-				// code block
+				console.log('Importing', filename);
 				return parse_json_file(filename);
 			default:
 				// code block
@@ -176,10 +178,10 @@ async function export_file(filename = config.files.default_xml_name) {
 
 		switch (split[1]) {
 			case 'xml':
-				// code block
+				console.log('Exporting', filename);
 				return export_xml_file(filename);
 			case 'json':
-				// code block
+				console.log('Exporting', filename);
 				return export_json_file(filename);
 			default:
 				// code block

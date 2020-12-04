@@ -15,7 +15,7 @@ async function fetch_distinct_lemmas() {
 		for (let i = 0; i < articles.length; i++) {
 			const article = articles[i];
 
-			console.log('TOTAL TOKENS', article.pos_tags.length);
+			console.log('Extracting lemmas from article', article._id);
 
 			// Get just the lemmas from the tagged text
 			const lemmas = article.pos_tags.map((entry) => {
@@ -55,7 +55,10 @@ async function fetch_distinct_lemmas() {
 			}
 		}
 
-		return Lemma.find().lean();
+		const inserted_count = await Lemma.countDocuments();
+		console.log('Successfully inserted', inserted_count, 'unique lemmas');
+
+		return;
 	} catch (error) {
 		throw error;
 	}
@@ -70,6 +73,11 @@ async function create_inverted_index() {
 		// Get all the articles and lemmas from the database
 		const lemmas = await Lemma.find({}, { name: 1, articles: 1 });
 		const articles = await Article.find({}, { _id: 1, pos_tags: 1 });
+
+		console.log(
+			`Creating index from ${articles.length} articles and ${lemmas.length} lemmas`
+		);
+
 		// Initialize the tf-idf calculator
 		const tfidf = nlpService.tfidf;
 
@@ -93,6 +101,9 @@ async function create_inverted_index() {
 
 			await lemma.save();
 		}
+
+		console.log('Inverted index was successfully created');
+		return;
 	} catch (error) {
 		throw error;
 	}
@@ -134,7 +145,12 @@ async function query_lemmas(...lemmas) {
 			};
 		});
 
-		return result;
+		result.forEach((entry) => {
+			console.log('Lemma:', entry.name);
+			console.table(entry.documents);
+		});
+
+		return;
 	} catch (error) {
 		throw error;
 	}
@@ -156,10 +172,12 @@ async function test_response_time(queries) {
 			response_times.push(diff);
 		}
 
-		return (
+		average_time =
 			response_times.reduce((total, time) => total + time) /
-			response_times.length
-		);
+			response_times.length;
+
+		console.log('Average query response time:', average_time, 'ms');
+		return;
 	} catch (error) {
 		throw error;
 	}

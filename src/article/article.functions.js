@@ -135,8 +135,7 @@ async function fetch_articles() {
 		console.log(
 			`Fetching ${nyt_urls.length} NYT articles and ${cbs_urls.length} CBS articles`
 		);
-		// const urls = [...nyt_urls, ...cbs_urls];
-		const urls = [nyt_urls[6], cbs_urls[0]];
+		const urls = [...nyt_urls, ...cbs_urls];
 		let articles = [];
 
 		for (let i = 0; i < urls.length; i++) {
@@ -176,9 +175,10 @@ async function fetch_articles() {
 			});
 		}
 
-		console.log(`${articles.length} articles were successfully inserted`);
+		console.log(`The following articles were successfully inserted`);
+		console.table(articles);
 
-		return articles;
+		return;
 	} catch (error) {
 		throw error;
 	}
