@@ -56,6 +56,18 @@ mongoose.Promise = global.Promise;
 // 		process.exit(1);
 // 	});
 
+// Query lemmas
+lemmaService
+	.query_lemmas()
+	.then((r) => {
+		fs.writeFileSync('yolo.json', JSON.stringify(r));
+		process.exit(0);
+	})
+	.catch((e) => {
+		console.log(e);
+		process.exit(0);
+	});
+
 // Export file
 // fileService
 // 	.export_file('test.json')
@@ -69,16 +81,16 @@ mongoose.Promise = global.Promise;
 // 	});
 
 // Parse file
-fileService
-	.parse_file('sample.json')
-	.then((lemmas) => {
-		console.table(lemmas);
-		process.exit(0);
-	})
-	.catch((e) => {
-		console.log(e);
-		process.exit(0);
-	});
+// fileService
+// 	.parse_file('sample.json')
+// 	.then((lemmas) => {
+// 		console.table(lemmas);
+// 		process.exit(0);
+// 	})
+// 	.catch((e) => {
+// 		console.log(e);
+// 		process.exit(0);
+// 	});
 
 // Get some articles
 // Article.findOne({ _id: '5fc504ee66673f247ac8fb9f' })

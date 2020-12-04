@@ -121,10 +121,22 @@ async function export_xml_file(filename = config.files.default_xml_name) {
 async function export_json_file(filename = config.files.default_json_name) {
 	try {
 		const lemmas = await Lemma.find({}, { name: 1, articles: 1 }).lean();
+		const file = lemmas.map((lemma) => {
+			let entry = { name: lemma.name, documents: [] };
+
+			for (let article_id in lemma.articles) {
+				entry.documents.push({
+					id: article_id,
+					weight: lemma.articles[article_id].weight,
+				});
+			}
+
+			return entry;
+		});
 
 		return fs.outputFile(
 			path.join(config.files.root_dir, filename),
-			JSON.stringify(lemmas)
+			JSON.stringify(file)
 		);
 	} catch (error) {
 		throw error;

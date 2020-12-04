@@ -100,4 +100,44 @@ async function create_inverted_index() {
 	}
 }
 
-module.exports = { fetch_distinct_lemmas, create_inverted_index };
+/**
+ * Submit lemmas for inverted index querying
+ * @param  {...String} lemmas Lemmas to query
+ */
+async function query_lemmas(...lemmas) {
+	try {
+		// Prepare database queries
+		let query = {
+			$or: lemmas.map((lemma) => {
+				return { name: lemma };
+			}),
+		};
+
+		query = {};
+		// Get lemmas
+		const search_results = await Lemma.find(query, {
+			name: 1,
+			articles: 1,
+		}).lean();
+
+		// Sort results by weight descending
+		const result = search_results.map((r) => {
+			return {
+				name: r.name,
+				documents: Object.entries(r.articles)
+					.sort((a, b) => {
+						return b[1].weight - a[1].weight;
+					})
+					.map((entry) => {
+						return { id: entry[0], weight: entry[1].weight };
+					}),
+			};
+		});
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+}
+
+module.exports = { fetch_distinct_lemmas, create_inverted_index, query_lemmas };
