@@ -54,7 +54,7 @@ async function main() {
 				} else {
 					// Search
 					arguments.shift();
-					return lemmaService.query_lemmas(...arguments);
+					return lemmaService.query_lemmas(true, ...arguments);
 				}
 
 			case 'export':

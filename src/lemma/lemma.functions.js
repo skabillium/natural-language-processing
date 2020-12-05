@@ -11,11 +11,11 @@ const mongoose = require('mongoose');
 async function fetch_distinct_lemmas() {
 	try {
 		const articles = await Article.find({}, { _id: 1, pos_tags: 1 }).lean();
+		let inserted_count = 0;
 
 		for (let i = 0; i < articles.length; i++) {
 			const article = articles[i];
-
-			console.log('Extracting lemmas from article', article._id);
+			let article_lemma_count = 0;
 
 			// Get just the lemmas from the tagged text
 			const lemmas = article.pos_tags.map((entry) => {
@@ -51,12 +51,20 @@ async function fetch_distinct_lemmas() {
 					});
 
 					await lemma.save();
+					article_lemma_count++;
 				}
 			}
+			console.log(
+				`Successfully inserted ${article_lemma_count} lemmas from article ${article._id}`
+			);
+			inserted_count += article_lemma_count;
 		}
 
-		const inserted_count = await Lemma.countDocuments();
-		console.log('Successfully inserted', inserted_count, 'unique lemmas');
+		console.log(
+			'Successfully inserted a total of',
+			inserted_count,
+			'unique lemmas'
+		);
 
 		return;
 	} catch (error) {
@@ -113,7 +121,7 @@ async function create_inverted_index() {
  * Submit lemmas for inverted index querying
  * @param  {...String} lemmas Lemmas to query
  */
-async function query_lemmas(...lemmas) {
+async function query_lemmas(output = true, ...lemmas) {
 	try {
 		// Prepare database queries
 		let query = {
@@ -145,10 +153,18 @@ async function query_lemmas(...lemmas) {
 			};
 		});
 
-		result.forEach((entry) => {
-			console.log('Lemma:', entry.name);
-			console.table(entry.documents);
-		});
+		if (output) {
+			if (result.length !== 0) {
+				console.log(`Found the following ${result.length} lemmas`);
+			} else {
+				console.log('No lemmas found');
+			}
+
+			result.forEach((entry) => {
+				console.log('Lemma:', entry.name);
+				console.table(entry.documents);
+			});
+		}
 
 		return;
 	} catch (error) {
@@ -167,7 +183,7 @@ async function test_response_time(queries) {
 			const query = queries[i];
 
 			const start = new Date();
-			await query_lemmas(...query);
+			await query_lemmas(false, ...query);
 			const diff = new Date() - start;
 			response_times.push(diff);
 		}

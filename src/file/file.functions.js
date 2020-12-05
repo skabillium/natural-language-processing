@@ -19,6 +19,10 @@ async function parse_xml_file(filename = config.files.default_xml_name) {
 		);
 		const parsed = await parser.parseStringPromise(file);
 
+		console.log(
+			`Importing ${parsed.inverted_index.lemma.length} lemmas from ${filename}`
+		);
+
 		let result = [];
 
 		for (let i = 0; i < parsed.inverted_index.lemma.length; i++) {
@@ -40,7 +44,8 @@ async function parse_xml_file(filename = config.files.default_xml_name) {
 			result.push({ name: formatted_lemma.name, id: formatted_lemma._id });
 		}
 
-		return result;
+		console.log(`Successfully imported ${result.length} lemmas`);
+		return;
 	} catch (error) {
 		throw error;
 	}
@@ -53,6 +58,8 @@ async function parse_xml_file(filename = config.files.default_xml_name) {
 async function parse_json_file(filename = config.files.default_json_name) {
 	try {
 		const file = require(path.join(config.files.root_dir, filename));
+		console.log(`Importing ${file.length} lemmas from ${filename}`);
+
 		let result = [];
 
 		for (let i = 0; i < file.length; i++) {
@@ -74,7 +81,9 @@ async function parse_json_file(filename = config.files.default_json_name) {
 			result.push({ id: lemma._id, name: lemma.name });
 		}
 
-		return result;
+		console.log(`Successfully imported ${result.length} lemmas`);
+
+		return;
 	} catch (error) {
 		throw error;
 	}
@@ -87,6 +96,8 @@ async function parse_json_file(filename = config.files.default_json_name) {
 async function export_xml_file(filename = config.files.default_xml_name) {
 	try {
 		const lemmas = await Lemma.find({}, { name: 1, articles: 1 }).lean();
+		console.log(`Exporting ${lemmas.length} lemmas into ${filename}`);
+
 		const index_obj = {
 			inverted_index: {
 				lemma: lemmas.map((lemma) => {
@@ -121,6 +132,8 @@ async function export_xml_file(filename = config.files.default_xml_name) {
 async function export_json_file(filename = config.files.default_json_name) {
 	try {
 		const lemmas = await Lemma.find({}, { name: 1, articles: 1 }).lean();
+		console.log(`Exporting ${lemmas.length} lemmas into ${filename}`);
+
 		const file = lemmas.map((lemma) => {
 			let entry = { name: lemma.name, documents: [] };
 
@@ -156,13 +169,10 @@ async function parse_file(filename = config.files.default_xml_name) {
 
 		switch (split[1]) {
 			case 'xml':
-				console.log('Importing', filename);
 				return parse_xml_file(filename);
 			case 'json':
-				console.log('Importing', filename);
 				return parse_json_file(filename);
 			default:
-				// code block
 				return Promise.reject('Invalid file extension');
 		}
 	} catch (error) {
@@ -178,13 +188,10 @@ async function export_file(filename = config.files.default_xml_name) {
 
 		switch (split[1]) {
 			case 'xml':
-				console.log('Exporting', filename);
 				return export_xml_file(filename);
 			case 'json':
-				console.log('Exporting', filename);
 				return export_json_file(filename);
 			default:
-				// code block
 				return Promise.reject('Invalid file extension');
 		}
 	} catch (error) {
