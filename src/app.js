@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const config = require('./config');
 const { articleService, Article } = require('./article');
-const { lemmaService } = require('./lemma');
+const { lemmaService, Lemma } = require('./lemma');
 const { fileService } = require('./file');
 
 async function main() {
@@ -75,6 +75,51 @@ async function main() {
 					);
 				}
 
+			case 'get':
+				if (!arguments[1] || !arguments[2]) {
+					throw new Error('Invalid params use get article <id> or lemma <id>');
+				} else {
+					if (arguments[1] === 'article') {
+						const article = await Article.findOne({ _id: arguments[2] }).lean();
+						return console.dir(article, { depth: null, colors: true });
+					} else if (arguments[1] === 'lemma') {
+						const lemma = await Lemma.findOne({ _id: arguments[2] }).lean();
+						return console.dir(lemma, { depth: null, colors: true });
+					} else {
+						throw new Error(
+							'Invalid params use get article all/<id> or lemma all/<id>'
+						);
+					}
+				}
+
+			case 'delete':
+				if (!arguments[1] || !arguments[2]) {
+					throw new Error('Invalid params use get article <id> or lemma <id>');
+				} else {
+					if (arguments[1] === 'article') {
+						let deleted;
+						if (!arguments[2] || arguments[2] === 'all') {
+							deleted = await Article.deleteMany({});
+							console.log(`Deleted ${deleted.deletedCount} articles`);
+						} else {
+							await Article.deleteOne({ _id: arguments[2] });
+							console.log(`Deleted article ${arguments[2]}`);
+						}
+					} else if (arguments[1] === 'lemma') {
+						let deleted;
+						if (!arguments[2] || arguments[2] === 'all') {
+							deleted = await Lemma.deleteMany({});
+							console.log(`Deleted ${deleted.deletedCount} lemmas`);
+						} else {
+							await Lemma.deleteOne({ _id: arguments[2] });
+							console.log(`Deleted lemma ${arguments[2]}`);
+						}
+					} else {
+						throw new Error(
+							'Invalid params use get article <id> or lemma <id>'
+						);
+					}
+				}
 			default:
 				throw new Error('Invalid command name');
 		}
