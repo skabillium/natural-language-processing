@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const path = require('path');
+
 const config = require('./config');
 const { articleService, Article } = require('./article');
 const { lemmaService, Lemma } = require('./lemma');
 const { fileService } = require('./file');
+const { documentService } = require('./document');
 
 async function main() {
 	try {
@@ -64,6 +66,14 @@ async function main() {
 			case 'import':
 				// Import file
 				return fileService.parse_file(arguments[1]);
+
+			case 'train':
+				// Extract characteristics from given documents
+				if (!arguments[1]) throw new Error('Directory path is required');
+				return documentService.train(arguments[1]);
+
+			case 'compare':
+			// Compare document characteristics with the ones in the database and categorize document
 
 			case 'test':
 				// Test with query file

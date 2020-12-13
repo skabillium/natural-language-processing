@@ -8,7 +8,8 @@
 		"test:article": "node src/article/article.functions.js",
 		"test:nlp": "node src/nlp/nlp.functions.js",
 		"test:file": "node src/file/file.functions.js",
-		"test:lemma": "node src/lemma/lemma.functions.js"
+		"test:lemma": "node src/lemma/lemma.functions.js",
+		"test:document": "node src/document/document.functions.js"
 	},
 	"repository": {
 		"type": "git",

@@ -48,8 +48,20 @@ function get_tagged_word_lemma(word, tag) {
 	else return lemmatize.noun(word);
 }
 
+/**
+ * Tokenize and stem text.
+ * @param {String} text Text to be stemmed.
+ */
+function stem_text(text) {
+	const tokenized_text = tokenizer.tokenize(text);
+	return tokenized_text.map((word) =>
+		natural.PorterStemmer.stem(word.toLowerCase())
+	);
+}
+
 module.exports = {
 	tag_text,
 	get_tagged_word_lemma,
+	stem_text,
 	tfidf: new natural.TfIdf(),
 };

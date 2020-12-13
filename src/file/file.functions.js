@@ -6,6 +6,10 @@ const xml = require('xml2js');
 const path = require('path');
 const mongoose = require('mongoose');
 
+/************************************* 
+			Project part 1
+**************************************/
+
 /**
  * Parse XML file and store inverted index in the database.
  * @param {String} filename Name of file to be parsed.
@@ -198,6 +202,10 @@ async function export_file(filename = config.files.default_xml_name) {
 		throw error;
 	}
 }
+
+/************************************* 
+			Project part 2
+**************************************/
 
 module.exports = {
 	parse_xml_file,
