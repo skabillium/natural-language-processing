@@ -23,25 +23,28 @@ async function train(dir_path) {
 			`Deleting previous ${deleted_docs.deletedCount} documents and ${deleted_stems.deletedCount} stems`
 		);
 
-		// Resolve path to absolute
+		// Resolve given directory path to absolute
 		dir_path = path.resolve(dir_path);
 
 		// Initialize TF-IDF calculator
 		const tfidf = nlpService.tfidf;
 
+		// Get the categories from directory. ( Each subdirectory is a document category )
 		const categories = fs.readdirSync(dir_path);
+
+		// Initialize document and stem variables.
 		let saved_stems = new Set();
 		let saved_documents = [];
 
-		// For every category in directory
+		// Parse every document in every category and store it in database.
 		for (let i = 0; i < categories.length; i++) {
 			const category_name = categories[i];
 			const category_path = path.join(dir_path, category_name);
 
-			// Get all documents
+			// Get all documents in category.
 			const documents = fs.readdirSync(category_path);
 
-			// For every document
+			// Process and store documents.
 			for (let j = 0; j < documents.length; j++) {
 				const document_name = documents[j];
 				const document_path = path.join(category_path, document_name);
@@ -69,6 +72,8 @@ async function train(dir_path) {
 				});
 
 				saved_documents.push(document);
+
+				// Add document to TF-IDF calculator for later use.
 				tfidf.addDocument(stemmed);
 			}
 		}
@@ -84,6 +89,7 @@ async function train(dir_path) {
 			`Extracted ${stem_array.length} stems from ${saved_documents.length} documents`
 		);
 
+		// Stem count variable to optimize performance.
 		const stem_count = stem_array.length;
 
 		stem_array.forEach((stem, i) => {
@@ -113,6 +119,10 @@ async function train(dir_path) {
 	}
 }
 
+/**
+ * Categorize a given document and save it in the database.
+ * @param {String} doc_path Uncategorized document path.
+ */
 async function compare(doc_path) {
 	try {
 		// Get file contents and stem
@@ -166,19 +176,19 @@ async function compare(doc_path) {
 		}
 
 		// Save document to database
-		// const document = {
-		// 	_id: mongoose.Types.ObjectId(),
-		// 	name: path.basename(doc_path),
-		// 	text: document_text,
-		// 	stems: stemmed,
-		// 	tfidf_vector,
-		// 	category,
-		// };
+		const document = {
+			_id: mongoose.Types.ObjectId(),
+			name: path.basename(doc_path),
+			text: document_text,
+			stems: stemmed,
+			tfidf_vector,
+			category,
+		};
 
 		console.dir({ category, max_similarity }, { depth: null, colors: true });
 
-		// await document.save();
-		// console.log('Document categorized as', category);
+		await document.save();
+		console.log('Document categorized as', category);
 		return;
 	} catch (error) {
 		throw error;

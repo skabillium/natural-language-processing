@@ -10,9 +10,11 @@ const mongoose = require('mongoose');
  */
 async function fetch_distinct_lemmas() {
 	try {
+		// Get all database articles.
 		const articles = await Article.find({}, { _id: 1, pos_tags: 1 }).lean();
 		let inserted_count = 0;
 
+		// Extract unique lemmas from every article.
 		for (let i = 0; i < articles.length; i++) {
 			const article = articles[i];
 			let article_lemma_count = 0;

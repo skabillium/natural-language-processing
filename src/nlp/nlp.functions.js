@@ -19,7 +19,8 @@ const tokenizer = new natural.WordTokenizer();
 
 /**
  * Tag article body with tag and lemma.
- * @param {Object} body The article body
+ * @param {String} body The article body
+ * @returns {Array<Object>} The original text, tagged and lemmatized. ( ex. [{word: "nouns", tag:"NN", lemma:"noun"}] )
  */
 function tag_text(body) {
 	const tokenized_body = tokenizer.tokenize(body);
@@ -33,8 +34,9 @@ function tag_text(body) {
 }
 
 /**
- * Extract lemma from a given word
- * @param {String} word The word to be searched
+ * Extract lemma from a given word.
+ * @param {String} word The word to be searched.
+ * @returns {String} Lemma of the given word.
  */
 function get_tagged_word_lemma(word, tag) {
 	// Convert to lower case
@@ -51,7 +53,7 @@ function get_tagged_word_lemma(word, tag) {
 }
 
 /**
- * Tokenize and stem text.
+ * Extract the stems from a given text.
  * @param {String} text Text to be stemmed.
  * @returns {Array<String>} Stem array
  */

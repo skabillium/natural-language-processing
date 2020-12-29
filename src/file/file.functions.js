@@ -7,7 +7,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 
 /************************************* 
-			Project part 1
+			Project question 1
 **************************************/
 
 /**
@@ -16,6 +16,7 @@ const mongoose = require('mongoose');
  */
 async function parse_xml_file(filename = config.files.default_xml_name) {
 	try {
+		// Initialize XML parser and get file contents.
 		const parser = new xml.Parser();
 		const file = fs.readFileSync(
 			path.join(config.files.root_dir, filename),
@@ -29,6 +30,7 @@ async function parse_xml_file(filename = config.files.default_xml_name) {
 
 		let result = [];
 
+		// Save every inverted index lemma in database.
 		for (let i = 0; i < parsed.inverted_index.lemma.length; i++) {
 			const l = parsed.inverted_index.lemma[i];
 
@@ -61,11 +63,13 @@ async function parse_xml_file(filename = config.files.default_xml_name) {
  */
 async function parse_json_file(filename = config.files.default_json_name) {
 	try {
+		// Get file contents.
 		const file = require(path.join(config.files.root_dir, filename));
 		console.log(`Importing ${file.length} lemmas from ${filename}`);
 
 		let result = [];
 
+		// Save every inverted index lemma in database.
 		for (let i = 0; i < file.length; i++) {
 			const file_entry = file[i];
 
@@ -99,9 +103,11 @@ async function parse_json_file(filename = config.files.default_json_name) {
  */
 async function export_xml_file(filename = config.files.default_xml_name) {
 	try {
+		// Get every lemma from database.
 		const lemmas = await Lemma.find({}, { name: 1, articles: 1 }).lean();
 		console.log(`Exporting ${lemmas.length} lemmas into ${filename}`);
 
+		// Initialize inverted index object in the required format.
 		const index_obj = {
 			inverted_index: {
 				lemma: lemmas.map((lemma) => {
@@ -120,6 +126,7 @@ async function export_xml_file(filename = config.files.default_xml_name) {
 			},
 		};
 
+		// Initialize XML builder module and write to file.
 		const builder = new xml.Builder();
 		const file = builder.buildObject(index_obj);
 
@@ -135,9 +142,11 @@ async function export_xml_file(filename = config.files.default_xml_name) {
  */
 async function export_json_file(filename = config.files.default_json_name) {
 	try {
+		// Get every lemma from database.
 		const lemmas = await Lemma.find({}, { name: 1, articles: 1 }).lean();
 		console.log(`Exporting ${lemmas.length} lemmas into ${filename}`);
 
+		// Initialize inverted index object in the required format.
 		const file = lemmas.map((lemma) => {
 			let entry = { name: lemma.name, documents: [] };
 
@@ -151,6 +160,7 @@ async function export_json_file(filename = config.files.default_json_name) {
 			return entry;
 		});
 
+		// Write to file
 		return fs.outputFile(
 			path.join(config.files.root_dir, filename),
 			JSON.stringify(file)
@@ -160,6 +170,11 @@ async function export_json_file(filename = config.files.default_json_name) {
 	}
 }
 
+/**
+ * Parse a given inverted index file and store in database. Previous lemmas will be deleted.
+ * Only XML and JSON formats are acceptable.
+ * @param {String} filename Name of file to be parsed
+ */
 async function parse_file(filename = config.files.default_xml_name) {
 	try {
 		// Delete previous lemmas
@@ -184,6 +199,10 @@ async function parse_file(filename = config.files.default_xml_name) {
 	}
 }
 
+/**
+ * Export all lemmas from database to a file with the given name. Only XML and JSON formats are acceptable.
+ * @param {String} filename Name of file to be exported.
+ */
 async function export_file(filename = config.files.default_xml_name) {
 	try {
 		const split = filename.split('.');
@@ -204,7 +223,7 @@ async function export_file(filename = config.files.default_xml_name) {
 }
 
 /************************************* 
-			Project part 2
+			Project question 2
 **************************************/
 
 module.exports = {

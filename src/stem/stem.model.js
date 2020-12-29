@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Create the Stem model for the database
+// The schema of the stem database model.
 const stemSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: String,

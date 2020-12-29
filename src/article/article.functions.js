@@ -9,6 +9,7 @@ const Article = require('./article.model');
 
 /**
  * Get New York Times home page and extract the article urls
+ * @returns {Array<String>} Article URL array.
  */
 async function get_nyt_urls() {
 	try {
@@ -42,6 +43,10 @@ async function get_nyt_urls() {
 	}
 }
 
+/**
+ * Get CBS home page and extract the article urls
+ * @returns {Array<String>} Article URL array.
+ */
 async function get_cbs_urls() {
 	try {
 		const response = await axios.get(config.urls.cbs);
@@ -69,6 +74,7 @@ async function get_cbs_urls() {
 /**
  * Get a New York Times article and extract headline, summary and body
  * @param {String} url The article url
+ * @returns {Object} The parsed article. ( eg. {headline:"...", body:"..."}  )
  */
 async function parse_nyt_article(url) {
 	try {
@@ -97,6 +103,11 @@ async function parse_nyt_article(url) {
 	}
 }
 
+/**
+ * Get a CBS article and extract headline, summary and body
+ * @param {String} url The article url
+ * @returns {Object} The parsed article. ( eg. {headline:"...", body:"..."}  )
+ */
 async function parse_cbs_article(url) {
 	try {
 		const response = await axios.get(url);
@@ -123,7 +134,7 @@ async function parse_cbs_article(url) {
 }
 
 /**
- * Scrape and parse all New York Times home page articles.
+ * Scrape, parse and save all New York Times and CBS home page articles.
  */
 async function fetch_articles() {
 	try {
@@ -157,8 +168,10 @@ async function fetch_articles() {
 				continue;
 			}
 
+			// Get the lemmas and POS tags from article
 			const pos_tags = nlpService.tag_text(parsed.body);
 
+			// Save article to database
 			const article = new Article({
 				_id: mongoose.Types.ObjectId(),
 				url,
@@ -169,6 +182,7 @@ async function fetch_articles() {
 
 			const saved = await article.save();
 
+			// If article is saved successfully store it for late logging
 			articles.push({
 				id: saved._id,
 				url: saved.url,
