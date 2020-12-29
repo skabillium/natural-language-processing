@@ -73,7 +73,9 @@ async function main() {
 				return documentService.train(arguments[1]);
 
 			case 'compare':
-			// Compare document characteristics with the ones in the database and categorize document
+				// Compare document characteristics with the ones in the database and categorize document
+				if (!arguments[1]) throw new Error('Directory path is required');
+				return documentService.compare(arguments[1]);
 
 			case 'test':
 				// Test with query file

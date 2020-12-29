@@ -1,13 +1,19 @@
 const path = require('path');
 
+const root_dir = path.join(__dirname, '..');
+
 /**
  * Config object for all project constants
  */
 module.exports = {
 	files: {
-		root_dir: path.join(__dirname, '..'),
+		root_dir,
 		default_xml_name: 'inverted-index.xml',
 		default_json_name: 'inverted-index.json',
+		stems_file: path.join(root_dir, '.stems.json'),
+	},
+	regex: {
+		numbers_only: /^[0-9]*$/,
 	},
 	urls: {
 		nyt: 'https://nytimes.com',

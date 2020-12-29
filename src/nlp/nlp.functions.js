@@ -1,4 +1,6 @@
 const natural = require('natural');
+const jaccard = require('jaccard');
+const cosine = require('cos-similarity');
 const { pos_tagger } = require('../config');
 
 const lemmatize = require('wink-lemmatizer');
@@ -31,7 +33,7 @@ function tag_text(body) {
 }
 
 /**
- * Get lemma from word
+ * Extract lemma from a given word
  * @param {String} word The word to be searched
  */
 function get_tagged_word_lemma(word, tag) {
@@ -51,6 +53,7 @@ function get_tagged_word_lemma(word, tag) {
 /**
  * Tokenize and stem text.
  * @param {String} text Text to be stemmed.
+ * @returns {Array<String>} Stem array
  */
 function stem_text(text) {
 	const tokenized_text = tokenizer.tokenize(text);
@@ -59,9 +62,24 @@ function stem_text(text) {
 	);
 }
 
+/**
+ * Get similarity index between 2 documents based on the jaccard and cosine similarity functions.
+ * The index is the average between the 2 indexes | index = (jaccard+cosine)/2
+ * @param {Array<String>} doc1 Document 1
+ * @param {Array<String>} doc2 Document 2
+ * @returns {Number} Similarity index
+ */
+function get_similarity(doc1, doc2) {
+	const cosine_index = cosine(doc1, doc2);
+	const jaccard_index = jaccard.index(doc1, doc2);
+
+	return (cosine_index + jaccard_index) / 2;
+}
+
 module.exports = {
 	tag_text,
 	get_tagged_word_lemma,
 	stem_text,
+	get_similarity,
 	tfidf: new natural.TfIdf(),
 };

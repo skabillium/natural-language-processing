@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Create the lemma model for the database
+// Create the Document model for the database
 const documentSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: String,
