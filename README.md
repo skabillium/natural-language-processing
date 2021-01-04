@@ -6,7 +6,7 @@ NLP school project for indexing and categorizing websites, made with NodeJS. Thi
    extracted from the articles.
 2. Creating a method to categorize a given document according to it's similarity with a given categorized document.
 
-### Getting started
+## Getting started
 
 To install the project you will need:
 
@@ -30,7 +30,7 @@ The project is implemented as a CLI so every command should be run in the root d
     npm start <COMMAND> <OPTIONS>
 ```
 
-### Question 1
+## Question 1
 
 There are the following functionalities regarding the first question:
 
