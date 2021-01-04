@@ -133,7 +133,7 @@ Delete an article or lemma from the database.
     npm start delete lemma <LEMMA_ID>
 ```
 
-### Question 1
+### Question 2
 
 There are the following functionalities regarding the second question:
 
