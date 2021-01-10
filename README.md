@@ -30,6 +30,8 @@ The project is implemented as a CLI so every command should be run in the root d
     npm start <COMMAND> <OPTIONS>
 ```
 
+Before starting the project make sure to replace the default database connection string, in the src/config.js file, with the one you will be using.
+
 ## Question 1
 
 There are the following functionalities regarding the first question:
