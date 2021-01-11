@@ -121,7 +121,8 @@ async function create_inverted_index() {
 
 /**
  * Submit lemmas for inverted index querying
- * @param  {...String} lemmas Lemmas to query
+ * @param {Boolean} output Print output or not.
+ * @param  {...String} lemmas Lemmas to query.
  */
 async function query_lemmas(output = true, ...lemmas) {
 	try {

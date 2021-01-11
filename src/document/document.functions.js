@@ -14,14 +14,9 @@ const config = require('../config');
 async function train(dir_path) {
 	try {
 		// Delete previous stems and documents
-		const [deleted_docs, deleted_stems] = await Promise.all([
-			Document.deleteMany({}),
-			Stem.deleteMany({}),
-		]);
+		const deleted_docs = await Document.deleteMany({});
 
-		console.log(
-			`Deleting previous ${deleted_docs.deletedCount} documents and ${deleted_stems.deletedCount} stems`
-		);
+		console.log(`Deleting previous ${deleted_docs.deletedCount} documents...`);
 
 		// Resolve given directory path to absolute
 		dir_path = path.resolve(dir_path);
